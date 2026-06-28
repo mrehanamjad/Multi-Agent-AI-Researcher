@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ── Startup ───────────────────────────────────────────────────────────────
-    # # just for bypassing authentication in development
-    # if settings.environment == "production" and settings.auth_bypass:
-    #     raise RuntimeError("Clerk authentication bypass is not allowed in production environment")
+    # Prevent bypassing authentication in production
+    if settings.environment.lower() == "production" and settings.auth_bypass:
+        raise RuntimeError("Clerk authentication bypass is not allowed in production environment")
 
     if not settings.openrouter_api_key:
         raise RuntimeError("OPENROUTER_API_KEY environment variable is required. Add it to .env")
@@ -76,9 +76,21 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please try again later."},
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

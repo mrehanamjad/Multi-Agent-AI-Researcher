@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { relativeDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Logo from "./Logo";
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const [query, setQuery] = useState("");
@@ -27,15 +28,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-4">
-        <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-soft">
-          <Telescope className="h-5 w-5" />
-        </div>
-        <div className="leading-tight">
-          <p className="font-display text-sm font-semibold">Agentic Research</p>
-          <p className="text-[11px] text-muted-foreground">Assistant</p>
-        </div>
-      </div>
+      <Logo />
 
       <div className="px-3">
         <Button

@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { ReportView } from "@/components/report/ReportView";
 import { ErrorState } from "@/components/common/ErrorState";
-import { InterruptedState } from "@/components/common/InterruptedState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getReportById, deleteReport } from "@/services/history";

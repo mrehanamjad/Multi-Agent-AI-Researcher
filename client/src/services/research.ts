@@ -10,11 +10,10 @@ async function processResearchStream(
   onEvent: (event: SSEEvent) => void,
   signal?: AbortSignal,
 ) {
-  const headers: HeadersInit = { "Content-Type": "application/json" };
+  const headers = new Headers({ "Content-Type": "application/json" });
   const token = await getAuthToken();
   if (token) {
-    // @ts-ignore
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
   const response = await fetch(url, {

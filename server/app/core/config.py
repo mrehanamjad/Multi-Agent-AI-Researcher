@@ -22,10 +22,8 @@ class Settings(BaseSettings):
     # No default → server crashes at startup if missing. Intentional: fail fast
     # rather than letting users run research that will fail later.
 
-    # ── Optional API keys ─────────────────────────────────────────────────────
-    tavily_api_key: str = ""
-    # Empty string = not configured. The web_search node checks for this
-    # and logs a warning at startup.
+    # ── Required Web Search API key ───────────────────────────────────────────
+    tavily_api_key: str
 
     qdrant_url: str = ""
     # Empty string = no knowledge base. The kb_search node skips gracefully.
@@ -41,16 +39,23 @@ class Settings(BaseSettings):
     database_url: str
 
     # ── Clerk Authentication Settings ──────────────────────────────────────────
-    clerk_secret_key: str = ""
-    clerk_issuer: str = ""
-    clerk_jwks_url: str = ""
+    clerk_secret_key: str
+    clerk_issuer: str
+    clerk_jwks_url: str
 
-    # # ── Development Bypass Settings ───────────────────────────────────────────
-    # environment: str = "production"
-    # auth_bypass: bool = False
-    # dev_user_id: str = "dev_user"
-    # dev_user_email: str = "dev_user@example.com"
-    # dev_user_name: str = "Development User"
+    # ── Security & Environment Settings ────────────────────────────────────────
+    environment: str = "production"
+    allowed_origins: str = "http://localhost:5173"  # Comma-separated list of allowed origins
+    
+    # ── Development Bypass Settings ───────────────────────────────────────────
+    auth_bypass: bool = False
+    dev_user_id: str = "dev_user"
+    dev_user_email: str = "dev_user@example.com"
+    dev_user_name: str = "Development User"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
 
 
     # ── Server settings ───────────────────────────────────────────────────────

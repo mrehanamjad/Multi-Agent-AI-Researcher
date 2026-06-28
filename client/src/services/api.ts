@@ -1,4 +1,4 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 let getToken: (() => Promise<string | null>) | null = null;
 
@@ -15,31 +15,50 @@ export class APIError extends Error {
   constructor(
     public status: number,
     public message: string,
-    public data?: any,
+    public data?: unknown,
   ) {
     super(message);
     this.name = "APIError";
   }
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+interface CustomRequestInit extends RequestInit {
+  timeout?: number;
+}
+
+export async function apiFetch<T>(path: string, init?: CustomRequestInit): Promise<T> {
   const url = `${API_BASE}${path}`;
   
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...init?.headers,
-  };
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
 
   const token = await getAuthToken();
   if (token) {
-    // @ts-ignore
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(url, {
-    ...init,
-    headers,
-  });
+  // Setup abort controller for timeout
+  const timeoutMs = init?.timeout || 30000; // 30 second default timeout
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new APIError(408, "Request timed out", null);
+    }
+    throw error;
+  } finally {
+    clearTimeout(id);
+  }
 
   if (!response.ok) {
     let errorData;
@@ -48,6 +67,12 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     } catch {
       // Ignored
     }
+    
+    // Centralized 401 handling (e.g. could trigger a custom event or redirect)
+    if (response.status === 401) {
+      console.warn("Unauthorized request. Token may be expired.");
+    }
+    
     throw new APIError(
       response.status,
       errorData?.detail || `Request failed with status ${response.status}`,
@@ -55,12 +80,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     );
   }
 
-  // Handle empty responses
   if (response.status === 204) {
     return {} as T;
   }
 
-  // Check if response is JSON
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     return response.json();
