@@ -9,15 +9,12 @@ langchain-openai>=0.1.0
 langchain-community>=0.2.0
 langgraph>=0.2.0
 
-# NEW in Lecture 18: knowledge base search (same stack as Lecture 17/18)
-langchain-huggingface>=0.0.3
-sentence-transformers>=3.0.0   # local embedding model (free, no API key needed)
-qdrant-client>=1.9.0           # vector database client (optional — only if KB is configured)
+# Rate limiting support
+slowapi>=0.1.9
 
 # Web search
 tavily-python>=0.3.0
 
-# NEW in Lecture 19: PDF generation
 # reportlab is a pure-Python library — no external binary needed
 reportlab>=4.0.0
 
