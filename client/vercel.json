@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "framework": "nitro",
+  "outputDirectory": ".output/public",
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/_nitro/(.*)",
+      "dest": "/_nitro/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ]
+}
