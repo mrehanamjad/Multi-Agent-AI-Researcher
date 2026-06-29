@@ -1,37 +1,49 @@
-import { motion,  } from 'framer-motion';
-import {  Link } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
+import { Link } from '@tanstack/react-router';
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/layout/Logo';
 
+// Extract links to an array for easier maintenance and cleaner JSX
+const NAV_LINKS = [
+  { href: '#process', label: 'Process' },
+  { href: '#working', label: 'Working' },
+  { href: '#features', label: 'Features' },
+];
+
 function Nav() {
   return (
     <motion.nav
+      aria-label="Main Navigation"
       initial={{ y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="fixed top-0 left-0 right-0 z-50 glass border-b"
+      className="fixed inset-x-0 top-0 z-50 border-b glass"
     >
-      <div className="mx-auto max-w-6xl flex items-center justify-between px-4 sm:px-6 h-14">
+      <div className="flex items-center justify-between h-14 max-w-6xl px-4 mx-auto sm:px-6">
+        {/* Logo Section */}
         <Link
           to="/"
-          className="flex items-center gap-2 font-display font-semibold text-foreground"
+          aria-label="Home"
+          className="flex items-center gap-2 font-semibold font-display text-foreground"
         >
           <Logo />
         </Link>
 
-        <div className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-          <a href="#process" className="hover:text-foreground transition-colors">
-            Process
-          </a>
-          <a href="#working" className="hover:text-foreground transition-colors">
-            working
-          </a>
-          <a href="#features" className="hover:text-foreground transition-colors">
-            Features
-          </a>
+        {/* Center Links (Hidden on Mobile) */}
+        <div className="hidden items-center gap-6 text-sm sm:flex text-muted-foreground">
+          {NAV_LINKS.map(({ href, label }) => (
+            <a
+              key={href}
+              href={href}
+              className="transition-colors hover:text-foreground"
+            >
+              {label}
+            </a>
+          ))}
         </div>
 
+        {/* Authentication Section */}
         <div className="flex items-center gap-2">
           <SignedOut>
             <SignInButton mode="modal" fallbackRedirectUrl="/app">
@@ -43,9 +55,10 @@ function Nav() {
               <Button size="sm">Get started</Button>
             </SignUpButton>
           </SignedOut>
+          
           <SignedIn>
             <Link to="/app">
-              <Button size="sm">App</Button>
+              <Button size="sm">Dashboard</Button>
             </Link>
           </SignedIn>
         </div>

@@ -52,8 +52,8 @@ async def lifespan(app: FastAPI):
         openrouter_api_key=settings.openrouter_api_key,
         openrouter_base_url=settings.openrouter_base_url,
     )
-    logger.info("Research agent ready. Server is up at http://localhost:8002")
-    logger.info("API docs: http://localhost:8002/docs")
+    logger.info("Research agent ready. Server is up at http://localhost:8000")
+    logger.info("API docs: http://localhost:8000/docs")
 
     yield  # Server is now running and accepting requests
 
@@ -65,9 +65,9 @@ async def lifespan(app: FastAPI):
 # ── FastAPI app ────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="Agentic Research Assistant — Lecture 19",
+    title="Agentic Research Assistant ",
     description=(
-        "Give the agent a topic. It validates the topic, plans its research strategy, "
+        "Give the agent a topic. It validates the topic,ask cirtation questions from user, plans its research strategy, "
         "searches the web (up to 20 URLs), optionally searches a local knowledge base, "
         "and writes a structured report. "
         "Every step streams to the browser in real time via Server-Sent Events (SSE)."
