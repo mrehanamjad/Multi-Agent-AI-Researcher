@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Download, Trash2, Link2 } from "lucide-react";
+import { Copy, Check, Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,15 @@ export function ReportView({ report, onDelete }: { report: Report; onDelete?: ()
 
   const body = report.report.replace(/^#\s+.+\n+/, "");
 
+  const handleDownloadPdf = async () => {
+    try {
+      await downloadPdf(report.id);
+    } catch (err) {
+      console.error("PDF download failed:", err);
+      toast.error("Couldn't download the PDF. Please try again.");
+    }
+  };
+
   return (
     <div className="scroll-fade h-full overflow-y-auto">
       {/* Sticky toolbar */}
@@ -46,7 +55,7 @@ export function ReportView({ report, onDelete }: { report: Report; onDelete?: ()
           </span>
           <StatusBadge status={report.status} className="hidden sm:inline-flex" />
           <div className="ml-auto flex items-center gap-1.5">
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => downloadPdf(report.id)}>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleDownloadPdf}>
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">PDF</span>
             </Button>
@@ -114,11 +123,11 @@ export function ReportView({ report, onDelete }: { report: Report; onDelete?: ()
               <TabsTrigger value="review">Review</TabsTrigger>
             )}
           </TabsList>
-          
+
           <TabsContent value="report" className="mt-0 outline-none">
             <Markdown content={body} />
           </TabsContent>
-          
+
           <TabsContent value="sources" className="mt-0 outline-none">
             {report.sources && report.sources.length > 0 ? (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -127,20 +136,20 @@ export function ReportView({ report, onDelete }: { report: Report; onDelete?: ()
                 ))}
               </div>
             ) : (
-              <EmptySectionState 
-                title="No Sources Found" 
-                description="The assistant didn't collect any external sources for this report." 
+              <EmptySectionState
+                title="No Sources Found"
+                description="The assistant didn't collect any external sources for this report."
               />
             )}
           </TabsContent>
-          
+
           <TabsContent value="review" className="mt-0 outline-none">
             {report.critic_feedback ? (
               <CriticCard critic={report.critic_feedback} />
             ) : (
-              <EmptySectionState 
-                title="No Review Available" 
-                description="The assistant skipped the critical review phase for this report." 
+              <EmptySectionState
+                title="No Review Available"
+                description="The assistant skipped the critical review phase for this report."
               />
             )}
           </TabsContent>

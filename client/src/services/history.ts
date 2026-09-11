@@ -1,4 +1,4 @@
-import { apiFetch, API_BASE } from "./api";
+import { apiFetch, API_BASE, getAuthToken, APIError } from "./api";
 import type { HistoryItem, Report } from "@/types";
 
 export interface HistoryListResponse {
@@ -24,7 +24,39 @@ export async function deleteReport(id: string): Promise<{ status: string; id: st
   return apiFetch(`/history/${id}`, { method: "DELETE" });
 }
 
-export function downloadPdf(id: string) {
-  // Just open the download URL in a new window/tab
-  window.open(`${API_BASE}/history/${id}/pdf`, "_blank");
+export async function downloadPdf(id: string) {
+  const token = await getAuthToken();
+
+  const response = await fetch(`${API_BASE}/history/${id}/pdf`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  if (!response.ok) {
+    let detail = `Request failed with status ${response.status}`;
+    try {
+      const data = await response.json();
+      detail = data?.detail || detail;
+    } catch {
+      // Ignored
+    }
+    throw new APIError(response.status, detail);
+  }
+
+  const blob = await response.blob();
+
+  // Honor the filename the server sent via Content-Disposition.
+  const disposition = response.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match?.[1] || `research_${id}.pdf`;
+
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(blobUrl);
+
 }
+
