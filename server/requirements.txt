@@ -22,7 +22,8 @@ reportlab>=4.0.0
 anyio>=4.0.0
 
 # Database support (PostgreSQL + SQLAlchemy)
-SQLAlchemy>=2.0.0
+SQLAlchemy[asyncio]>=2.0.0
+greenlet>=3.0.0
 asyncpg>=0.29.0
 alembic>=1.13.0
 
