@@ -29,8 +29,8 @@ async def lifespan(app: FastAPI):
     if settings.environment.lower() == "production" and settings.auth_bypass:
         raise RuntimeError("Clerk authentication bypass is not allowed in production environment")
 
-    if not settings.openrouter_api_key:
-        raise RuntimeError("OPENROUTER_API_KEY environment variable is required. Add it to .env")
+    if not settings.ai_api_key:
+        raise RuntimeError("AI_API_KEY environment variable is required. Add it to .env")
 
 
     if not settings.tavily_api_key:
@@ -49,8 +49,8 @@ async def lifespan(app: FastAPI):
     # Build the LangGraph agent (compiles the graph, creates the LLM clients)
     logger.info("Building research agent...")
     app_state["agent"] = build_agent(
-        openrouter_api_key=settings.openrouter_api_key,
-        openrouter_base_url=settings.openrouter_base_url,
+        ai_api_key=settings.ai_api_key,
+        ai_base_url=settings.ai_base_url,
     )
     logger.info("Research agent ready. Server is up at http://localhost:8000")
     logger.info("API docs: http://localhost:8000/docs")

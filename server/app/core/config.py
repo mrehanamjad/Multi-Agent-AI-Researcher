@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     """
 
     # ── Required API keys ─────────────────────────────────────────────────────
-    openrouter_api_key: str
-    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    ai_api_key: str
+    ai_base_url: str = "https://openrouter.ai/api/v1"
     # No default → server crashes at startup if missing. Intentional: fail fast
     # rather than letting users run research that will fail later.
 

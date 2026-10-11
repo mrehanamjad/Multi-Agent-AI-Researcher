@@ -105,15 +105,15 @@ def get_domain(url: str) -> str:
 
 # ── Agent builder ─────────────────────────────────────────────────────────────
 
-def build_agent(openrouter_api_key: str, openrouter_base_url: str):
+def build_agent(ai_api_key: str, ai_base_url: str):
     """
     Build and compile the Deep Research LangGraph workflow.
     """
     llm = ChatOpenAI(
         model=settings.llm_model,
         temperature=0,
-        api_key=openrouter_api_key,
-        base_url=openrouter_base_url,
+        api_key=ai_api_key,
+        base_url=ai_base_url,
     )
 
     validation_llm = llm.with_structured_output(TopicValidation)

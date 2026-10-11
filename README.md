@@ -77,8 +77,8 @@ pip install -r requirements.txt
 Create a `.env` file in `server/` with:
 
 ```env
-OPENROUTER_API_KEY=your_openrouter_key
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+AI_API_KEY=your_openrouter_key
+AI_BASE_URL=https://openrouter.ai/api/v1
 TAVILY_API_KEY=your_tavily_key
 DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/dbname
 CLERK_SECRET_KEY=your_clerk_secret_key
